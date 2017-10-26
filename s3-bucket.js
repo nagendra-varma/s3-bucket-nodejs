@@ -7,16 +7,8 @@ pubnub = new PubNub({
 		secretKey: 'sec-c-YTU1ZTZjNDYtYjY0MC00NGZiLWE1ZjUtOTI0ZGI2ZDRlOGI1'
     });
 
-pubnub.grant(
-    {
-        channels: ["greet"],
-        read: true,
-        write: true
-    },
-    function (status) {
-        console.log("pubnub grant status : ", status);
-    }
-);
+subscribe();
+grantForPublishingIntoChannel();
 
 var s3 = new AWS.S3();
 
@@ -49,6 +41,39 @@ if (err) {
    }
 
 });
+
+function subscribe() {
+	pubnub.addListener({
+        status: function(statusEvent) {
+            if (statusEvent.category === "PNConnectedCategory") {
+                console.log("Listening to pubnub");
+            }
+        },
+        message: function(message) {
+            console.log("New Message!!", message);
+        },
+        presence: function(presenceEvent) {
+            // handle presence
+        }
+    })      
+    console.log("Subscribing..");
+    pubnub.subscribe({
+        channels: ['greet'] 
+    });
+}
+
+function grantForPublishingIntoChannel() {
+	pubnub.grant(
+    {
+        channels: ["greet"],
+        read: true,
+        write: true
+    },
+    function (status) {
+        console.log("pubnub grant status : ", status);
+    }
+);
+}
 
 function publishFile(message) {
 	console.log("Publishing s3 file contents to pubnub");
