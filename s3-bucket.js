@@ -3,8 +3,20 @@ var PubNub = require('pubnub');
 
 pubnub = new PubNub({
         publishKey : 'pub-c-d11135a3-2b45-4b82-aaa8-019acb4f6377',
-        subscribeKey : 'sub-c-fab87fa4-b8e5-11e7-a84a-1e64a053e7fc'
-    })
+        subscribeKey : 'sub-c-fab87fa4-b8e5-11e7-a84a-1e64a053e7fc',
+		secretKey: 'sec-c-YTU1ZTZjNDYtYjY0MC00NGZiLWE1ZjUtOTI0ZGI2ZDRlOGI1'
+    });
+
+pubnub.grant(
+    {
+        channels: ["greet"],
+        read: true,
+        write: true
+    },
+    function (status) {
+        console.log("pubnub grant status : ", status);
+    }
+);
 
 var s3 = new AWS.S3();
 
@@ -41,6 +53,7 @@ if (err) {
 function publishFile(message) {
 	console.log("Publishing s3 file contents to pubnub");
 	var publishConfig = {
+		// channel name : Channel-yqpl1sc3u
 		channel : "greet",
 		message : message
 	}
