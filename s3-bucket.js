@@ -29,6 +29,7 @@ if (err) {
         if (err) {
             console.log(err, err.stack);
         } else {
+			publishFile(data.Body.toString('ascii'));
             console.log("Raw text:\n" + data.Body.toString('ascii'));
         }
     });
@@ -37,7 +38,14 @@ if (err) {
 
 });
 
-function publishFile() {
-	
+function publishFile(message) {
+	console.log("Publishing s3 file contents to pubnub");
+	var publishConfig = {
+		channel : "greet",
+		message : message
+	}
+	pubnub.publish(publishConfig, function(status, response) {
+		console.log(status, response);
+	})
 }
 
